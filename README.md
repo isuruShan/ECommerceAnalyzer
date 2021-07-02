@@ -1,1 +1,1 @@
-# BigDataAssignemnt-ECommerceAnalyzer
+# BigData-ECommerceAnalyzer
