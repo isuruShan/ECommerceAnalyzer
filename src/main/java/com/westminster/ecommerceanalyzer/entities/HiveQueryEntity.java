@@ -11,11 +11,14 @@ public class HiveQueryEntity implements Serializable {
     private int id;
     private String name;
     private String query;
+    @Column(name="is_dml")
+    private boolean isDML;
 
-    public HiveQueryEntity(int id, String name, String query) {
+    public HiveQueryEntity(int id, String name, String query, boolean isDML) {
         this.id = id;
         this.name = name;
         this.query = query;
+        this.isDML = isDML;
     }
 
     public HiveQueryEntity() {
@@ -42,5 +45,13 @@ public class HiveQueryEntity implements Serializable {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public boolean isDML() {
+        return isDML;
+    }
+
+    public void setDML(boolean DML) {
+        isDML = DML;
     }
 }

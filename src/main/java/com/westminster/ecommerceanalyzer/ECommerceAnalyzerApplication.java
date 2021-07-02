@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 import java.util.concurrent.Executor;
@@ -35,6 +36,11 @@ public class ECommerceAnalyzerApplication {
         public static  final int MAX_POOL_SIZE = 2;
         public static  final int QUEUE_CAPACITY = 50;
         public static  final boolean ALLOW_CORE_THREAD_TIMEOUT = false;
+
+        @Bean
+        public RestTemplate restTemplate() {
+            return new RestTemplate();
+        }
 
         @Configuration
         @EnableAsync

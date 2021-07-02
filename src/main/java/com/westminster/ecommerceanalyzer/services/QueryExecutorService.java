@@ -27,14 +27,14 @@ public class QueryExecutorService {
     private WeeklyIncomeAnalyzer weeklyIncomeAnalyzer;
 
 
-    @Scheduled(fixedDelay=60000)
-//    @Scheduled(cron="0 0 * * SUN")
+//    @Scheduled(fixedDelay=60000)
+    @Scheduled(cron="0 0 * * * SUN")
     @Async("taskExecutor")
     public void executeWeeklyIncomeAnalyzer() throws SQLException, ClassNotFoundException {
         HiveQueryEntity query = hiveQueryRepo.findByName(AnalyzerNames.WEEKLY_INCOME_ANALYZER.getName());
         logger.info("starting weekly income analyzer ");
         Connection con = hiveConnector.getConnection();
-        String sql = "SELECT * from ratings";
+        String sql = "create table if not exists test1 (id int)";
         weeklyIncomeAnalyzer.run(new AnalyzerRequest(con, sql));
         hiveConnector.closeConnection(con);
     }
