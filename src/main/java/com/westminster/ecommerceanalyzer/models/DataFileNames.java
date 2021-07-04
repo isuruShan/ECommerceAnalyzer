@@ -1,22 +1,23 @@
 package com.westminster.ecommerceanalyzer.models;
 
 public enum DataFileNames {
-    DATA_FILE_NAME_ONE("file-one", 1),
-    DATA_FILE_NAME_TWO("file-two", 2);
+    CUSTOMERS_FILE("customers", "customers"),
+    GEO_LOCATION_FILE("geo_locations", "geo_locations"),
+    SELLERS_FILE("sellers", "sellers");
 
     private final String name;
-    private final int value;
+    private final String tableName;
 
-    DataFileNames(String name1, int value) {
+    DataFileNames(String name1, String value) {
         this.name = name1;
-        this.value = value;
+        this.tableName = value;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getValue() {
-        return value;
+    public String getTableName() {
+        return tableName;
     }
 }

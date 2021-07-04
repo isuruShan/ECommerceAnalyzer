@@ -1,5 +1,6 @@
 package com.westminster.ecommerceanalyzer;
 
+import com.westminster.ecommerceanalyzer.models.DataFileNames;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,7 @@ public class FileServerClient {
         return listdata;
     }
     public List<String> getAllDirectoriesFromDate(Date fromDate) {
-        String result = restTemplate.getForObject(fileServerApiUrl + "hello.py", String.class);
+        String result = restTemplate.getForObject(fileServerApiUrl + "get-all-files-after?date=" + fromDate.toString() , String.class);
         JSONArray jsonArray = new JSONArray(result);
         List<String> listdata = new ArrayList<String>();
         if (jsonArray.length() > 0 ) {
@@ -41,5 +42,9 @@ public class FileServerClient {
             }
         }
         return listdata;
+    }
+
+    public String downloadFile(DataFileNames fileName, String directory) {
+        return restTemplate.getForObject(apacheUrl + directory + "/" + fileName.getName() , String.class);
     }
 }

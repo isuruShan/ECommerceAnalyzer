@@ -1,13 +1,14 @@
 package com.westminster.ecommerceanalyzer.models;
 
-public enum AnalyzerNames {
+public enum HiveQueryNames {
     WEEKLY_INCOME_ANALYZER("WEEKLY_INCOME_ANALYZER", 1),
-    DAILY_INCOME_ANALYZER("DAILY_INCOME_ANALYZER", 2);
+    DAILY_INCOME_ANALYZER("DAILY_INCOME_ANALYZER", 2),
+    PRODUCT_DETAILS_TABLE_CREATE("PRODUCT_DETAILS_TABLE_CREATE", 3);
 
     private final String name;
     private final int value;
 
-    AnalyzerNames(String name1, int value) {
+    HiveQueryNames(String name1, int value) {
         this.name = name1;
         this.value = value;
     }
