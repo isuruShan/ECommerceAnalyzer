@@ -9,8 +9,8 @@ public enum CollectionStatus {
     private final int value;
 
 
-    CollectionStatus(String name1, int value) {
-        this.name = name1;
+    CollectionStatus(String name, int value) {
+        this.name = name;
         this.value = value;
     }
 

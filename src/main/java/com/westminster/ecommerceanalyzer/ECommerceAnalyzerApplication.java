@@ -1,5 +1,6 @@
 package com.westminster.ecommerceanalyzer;
 
+import com.westminster.ecommerceanalyzer.services.HiveTablesCreator;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

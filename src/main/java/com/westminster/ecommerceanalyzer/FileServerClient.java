@@ -45,6 +45,6 @@ public class FileServerClient {
     }
 
     public String downloadFile(DataFileNames fileName, String directory) {
-        return restTemplate.getForObject(apacheUrl + directory + "/" + fileName.getName() , String.class);
+        return restTemplate.getForObject(apacheUrl + directory + "/" + fileName.getFileName() , String.class);
     }
 }

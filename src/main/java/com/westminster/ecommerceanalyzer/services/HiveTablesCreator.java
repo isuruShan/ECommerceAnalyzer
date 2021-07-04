@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @Component
-public abstract class HiveTablesCreator {
+public class HiveTablesCreator {
     @Autowired
     private HiveQueryRepo hiveQueryRepo;
     @Autowired

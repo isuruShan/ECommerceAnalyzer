@@ -22,9 +22,8 @@ public class QueryExecuteScheduler {
     Logger logger = LoggerFactory.getLogger(QueryExecuteScheduler.class);
     @Autowired
     private HiveQueryRepo hiveQueryRepo;
-    @Autowired()
+    @Autowired
     private HiveConnector hiveConnector;
-
 
     //    @Scheduled(fixedDelay=60000)
     @Scheduled(cron = "0 0 * * * SUN")

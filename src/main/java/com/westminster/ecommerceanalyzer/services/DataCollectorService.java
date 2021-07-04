@@ -1,8 +1,10 @@
 package com.westminster.ecommerceanalyzer.services;
 
 import com.westminster.ecommerceanalyzer.FileServerClient;
+import com.westminster.ecommerceanalyzer.entities.DataRetrievalEntity;
 import com.westminster.ecommerceanalyzer.entities.DataRetrievalRepo;
 import com.westminster.ecommerceanalyzer.entities.HiveQueryRepo;
+import com.westminster.ecommerceanalyzer.models.CollectionStatus;
 import com.westminster.ecommerceanalyzer.models.DataFileNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,27 +32,39 @@ public class DataCollectorService {
 
     Logger logger = LoggerFactory.getLogger(DataCollectorService.class);
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 100000)
 //    @Scheduled(cron="0 0 * * * SUN")
     @Async("taskExecutor")
     public void collect() throws SQLException, ClassNotFoundException {
         logger.info("starting the daily data collector.");
         List<Date> dates = dataRetrievalRepo.findLastSuccessfulDataRetrievalDate();
-        List<String> directoryList;
-        if (dates.isEmpty()) {
-            directoryList = fileServerClient.getAllDirectories();
-        } else {
-            directoryList = fileServerClient.getAllDirectoriesFromDate(dates.get(0));
-        }
-        directoryList.forEach(directory -> {
-            Arrays.stream(DataFileNames.values()).forEach(file -> {
-                try {
-                    updateTable(file, fileServerClient.downloadFile(file, directory));
-                } catch (SQLException | ClassNotFoundException throwables) {
-                    throwables.printStackTrace();
-                }
+        DataRetrievalEntity dataRetrievalEntity = new DataRetrievalEntity();
+        try {
+            dataRetrievalEntity.setDate(new Date());
+            dataRetrievalEntity.setStatus(CollectionStatus.IN_PROGRESS.getValue());
+            dataRetrievalRepo.insert(dataRetrievalEntity);
+            List<String> directoryList;
+            if (dates.isEmpty()) {
+                directoryList = fileServerClient.getAllDirectories();
+            } else {
+                directoryList = fileServerClient.getAllDirectoriesFromDate(dates.get(0));
+            }
+            directoryList.forEach(directory -> {
+                Arrays.stream(DataFileNames.values()).forEach(file -> {
+                    try {
+                        updateTable(file, fileServerClient.downloadFile(file, directory));
+                    } catch (SQLException | ClassNotFoundException throwables) {
+                        throwables.printStackTrace();
+                    }
+                });
             });
-        });
+            dataRetrievalEntity.setStatus(CollectionStatus.SUCCESSFUL.getValue());
+            dataRetrievalRepo.insert(dataRetrievalEntity);
+        } catch (Exception e) {
+            dataRetrievalEntity.setStatus(CollectionStatus.FAILED.getValue());
+            dataRetrievalRepo.insert(dataRetrievalEntity);
+        }
+
 
     }
 

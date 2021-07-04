@@ -8,8 +8,8 @@ public enum HiveQueryNames {
     private final String name;
     private final int value;
 
-    HiveQueryNames(String name1, int value) {
-        this.name = name1;
+    HiveQueryNames(String name, int value) {
+        this.name = name;
         this.value = value;
     }
 
