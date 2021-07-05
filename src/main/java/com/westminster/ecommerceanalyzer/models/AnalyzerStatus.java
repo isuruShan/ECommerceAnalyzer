@@ -1,15 +1,15 @@
 package com.westminster.ecommerceanalyzer.models;
 
-public enum CollectionStatus {
+public enum AnalyzerStatus {
     SUCCESSFUL("SUCCESSFUL", 1),
     FAILED("FAILED", 2),
-    IN_PROGRESS("IN_PROGRESS", 3);
+    IN_PROGRESS("IN_PROGRESS", 2);
 
     private final String name;
     private final int value;
 
 
-    CollectionStatus(String name, int value) {
+    AnalyzerStatus(String name, int value) {
         this.name = name;
         this.value = value;
     }

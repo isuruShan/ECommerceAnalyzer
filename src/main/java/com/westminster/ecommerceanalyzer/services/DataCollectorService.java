@@ -3,16 +3,27 @@ package com.westminster.ecommerceanalyzer.services;
 import com.westminster.ecommerceanalyzer.FileServerClient;
 import com.westminster.ecommerceanalyzer.entities.DataRetrievalEntity;
 import com.westminster.ecommerceanalyzer.entities.DataRetrievalRepo;
-import com.westminster.ecommerceanalyzer.entities.HiveQueryRepo;
 import com.westminster.ecommerceanalyzer.models.CollectionStatus;
 import com.westminster.ecommerceanalyzer.models.DataFileNames;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,11 +35,14 @@ public class DataCollectorService {
     @Autowired
     private DataRetrievalRepo dataRetrievalRepo;
     @Autowired
-    private HiveQueryRepo hiveQueryRepo;
-    @Autowired
     private FileServerClient fileServerClient;
     @Autowired
     private HiveTablesCreator hiveTablesCreator;
+    @Autowired
+    private Configuration hadoopConf;
+
+    @Value("${hdfs.base.path}")
+    private String hdfsBasePath;
 
     Logger logger = LoggerFactory.getLogger(DataCollectorService.class);
 
@@ -52,8 +66,9 @@ public class DataCollectorService {
             directoryList.forEach(directory -> {
                 Arrays.stream(DataFileNames.values()).forEach(file -> {
                     try {
-                        updateTable(file, fileServerClient.downloadFile(file, directory));
-                    } catch (SQLException | ClassNotFoundException throwables) {
+                        writeToDFS(directory, file.getFileName(), fileServerClient.downloadFile(file, directory));
+                        updateTable(file.getFileName(), directory);
+                    } catch (SQLException | ClassNotFoundException | IOException throwables) {
                         throwables.printStackTrace();
                     }
                 });
@@ -68,7 +83,18 @@ public class DataCollectorService {
 
     }
 
-    private void updateTable(DataFileNames fileName, String data) throws SQLException, ClassNotFoundException {
-        hiveTablesCreator.loadDataToTable(fileName, data);
+    private void updateTable(String fileName, String directory) throws SQLException, ClassNotFoundException {
+        hiveTablesCreator.loadDataToTable(fileName, directory);
+    }
+
+    private void writeToDFS(String date, String fileName, String directory) throws IOException {
+        InputStream dataStream = new ByteArrayInputStream(directory.getBytes(StandardCharsets.UTF_8));
+        FileSystem fs = FileSystem.get(URI.create(hdfsBasePath + date), hadoopConf);
+        FSDataOutputStream out = fs.create(new Path(fileName));
+        FileStatus[] fileStatus = fs.listStatus(new Path("/user/"));
+        for (FileStatus status : fileStatus) {
+            System.out.println(status.getPath().toString());
+        }
+        IOUtils.copyBytes(dataStream, out, 4096, true);
     }
 }

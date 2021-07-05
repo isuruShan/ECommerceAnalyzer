@@ -1,27 +1,23 @@
 package com.westminster.ecommerceanalyzer;
 
-import com.westminster.ecommerceanalyzer.services.HiveTablesCreator;
-import org.apache.commons.dbcp.BasicDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
-import javax.sql.DataSource;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Configuration
 @SpringBootApplication
@@ -55,6 +51,20 @@ public class ECommerceAnalyzerApplication {
                 t.setAllowCoreThreadTimeOut(ALLOW_CORE_THREAD_TIMEOUT);
                 return t;
             }
+        }
+
+        @Value("${hadoop.uri}")
+        private String hadoopURI;
+
+        @Bean
+        public org.apache.hadoop.conf.Configuration hadoopConfig() throws URISyntaxException, IOException {
+            org.apache.hadoop.conf.Configuration hadoopConf = new org.apache.hadoop.conf.Configuration();
+            FileSystem fs = FileSystem.get(URI.create(hadoopURI), hadoopConf);
+            FileStatus[] fileStatus = fs.listStatus(new Path("/user/hadoop/"));
+            for(FileStatus status : fileStatus){
+                System.out.println(status.getPath().toString());
+            }
+            return hadoopConf;
         }
 
     }

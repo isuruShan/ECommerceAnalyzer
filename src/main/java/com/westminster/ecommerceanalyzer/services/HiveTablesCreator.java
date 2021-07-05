@@ -3,8 +3,7 @@ package com.westminster.ecommerceanalyzer.services;
 import com.westminster.ecommerceanalyzer.HiveConnector;
 import com.westminster.ecommerceanalyzer.entities.HiveQueryEntity;
 import com.westminster.ecommerceanalyzer.entities.HiveQueryRepo;
-import com.westminster.ecommerceanalyzer.models.DataFileNames;
-import com.westminster.ecommerceanalyzer.models.HiveQueryNames;
+import com.westminster.ecommerceanalyzer.models.QueryParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 @Component
 public class HiveTablesCreator {
@@ -33,13 +33,24 @@ public class HiveTablesCreator {
         hiveConnector.closeConnection(con);
     }
 
-    public void loadDataToTable(DataFileNames fileName, String data) throws SQLException, ClassNotFoundException {
-        logger.info("starting loading data to " + fileName.getTableName() + " table");
-        createTable(fileName.getTableName());
-        HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(fileName.getTableName(), true);
+    public void loadDataToTable(String fileName,String directory) throws SQLException, ClassNotFoundException {
+        logger.info("starting loading data to " + fileName + " table");
+        createTable(fileName);
+        HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(fileName, true);
+        QueryParameters params = new QueryParameters();
+        params.setParam("directory", directory);
+        params.setParam("fileName", fileName);
+        String queryWithParams = createQueryWithParams(params, query.getQuery());
         Connection con = hiveConnector.getConnection();
         Statement statement = con.createStatement();
-        statement.execute(query.getQuery());
+        statement.execute(queryWithParams);
         hiveConnector.closeConnection(con);
+    }
+
+    private String createQueryWithParams(QueryParameters params, String query) {
+        for(Map.Entry<String, String> param: params.getParameterMap().entrySet()) {
+            query = query.replaceAll("\\$"+param.getKey(), param.getValue());
+        }
+        return query;
     }
 }

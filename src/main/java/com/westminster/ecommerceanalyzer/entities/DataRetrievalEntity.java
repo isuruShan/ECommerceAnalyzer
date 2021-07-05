@@ -46,7 +46,7 @@ public class DataRetrievalEntity implements Serializable {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = format.format(date);
         java.util.Date date1 = format.parse (dateString);
-        return date;
+        return date1;
     }
 
     public void setDate(java.util.Date date) throws ParseException {
