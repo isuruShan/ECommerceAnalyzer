@@ -3,6 +3,7 @@ package com.westminster.ecommerceanalyzer.services;
 import com.westminster.ecommerceanalyzer.HiveConnector;
 import com.westminster.ecommerceanalyzer.entities.HiveQueryEntity;
 import com.westminster.ecommerceanalyzer.entities.HiveQueryRepo;
+import com.westminster.ecommerceanalyzer.models.DataFileNames;
 import com.westminster.ecommerceanalyzer.models.QueryParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +34,14 @@ public class HiveTablesCreator {
         hiveConnector.closeConnection(con);
     }
 
-    public void loadDataToTable(String fileName,String directory) throws SQLException, ClassNotFoundException {
+    public void loadDataToTable(DataFileNames fileName, String directory) throws SQLException, ClassNotFoundException {
         logger.info("starting loading data to " + fileName + " table");
-        createTable(fileName);
-        HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(fileName, true);
+        createTable(fileName.getTableName());
+        HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(fileName.getTableName(), true);
         QueryParameters params = new QueryParameters();
-        params.setParam("directory", directory);
-        params.setParam("fileName", fileName);
+        params.setParam("directory", "/data/" + directory);
+        params.setParam("filename", fileName.getFileName());
+        params.setParam("table", fileName.getTableName());
         String queryWithParams = createQueryWithParams(params, query.getQuery());
         Connection con = hiveConnector.getConnection();
         Statement statement = con.createStatement();

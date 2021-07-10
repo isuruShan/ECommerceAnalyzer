@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name="analyze_job")
-public class AnalyzeJob {
+public class AnalyzeJobEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "analyzer_name")
     private String analyzerName;

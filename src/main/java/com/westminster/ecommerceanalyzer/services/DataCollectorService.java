@@ -67,30 +67,30 @@ public class DataCollectorService {
                 Arrays.stream(DataFileNames.values()).forEach(file -> {
                     try {
                         writeToDFS(directory, file.getFileName(), fileServerClient.downloadFile(file, directory));
-                        updateTable(file.getFileName(), directory);
+                        updateTable(file, directory);
                     } catch (SQLException | ClassNotFoundException | IOException throwables) {
+                        dataRetrievalEntity.setStatus(CollectionStatus.FAILED.getValue());
+                        dataRetrievalRepo.update(dataRetrievalEntity);
                         throwables.printStackTrace();
                     }
                 });
             });
             dataRetrievalEntity.setStatus(CollectionStatus.SUCCESSFUL.getValue());
-            dataRetrievalRepo.insert(dataRetrievalEntity);
+            dataRetrievalRepo.update(dataRetrievalEntity);
         } catch (Exception e) {
             dataRetrievalEntity.setStatus(CollectionStatus.FAILED.getValue());
-            dataRetrievalRepo.insert(dataRetrievalEntity);
+            dataRetrievalRepo.update(dataRetrievalEntity);
         }
-
-
     }
 
-    private void updateTable(String fileName, String directory) throws SQLException, ClassNotFoundException {
+    private void updateTable(DataFileNames fileName, String directory) throws SQLException, ClassNotFoundException {
         hiveTablesCreator.loadDataToTable(fileName, directory);
     }
 
     private void writeToDFS(String date, String fileName, String directory) throws IOException {
         InputStream dataStream = new ByteArrayInputStream(directory.getBytes(StandardCharsets.UTF_8));
-        FileSystem fs = FileSystem.get(URI.create(hdfsBasePath + date), hadoopConf);
-        FSDataOutputStream out = fs.create(new Path(fileName));
+        FileSystem fs = FileSystem.get(URI.create(hdfsBasePath), hadoopConf);
+        FSDataOutputStream out = fs.create(new Path("/data/" + date + "/" + fileName));
         FileStatus[] fileStatus = fs.listStatus(new Path("/user/"));
         for (FileStatus status : fileStatus) {
             System.out.println(status.getPath().toString());

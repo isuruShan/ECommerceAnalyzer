@@ -24,6 +24,7 @@ import java.util.concurrent.Executor;
 @EnableScheduling
 public class ECommerceAnalyzerApplication {
     public static void main(String[] args) {
+        System.setProperty("HADOOP_USER_NAME", "hadoop");
         SpringApplication.run(ECommerceAnalyzerApplication.class, args);
     }
 
@@ -59,11 +60,6 @@ public class ECommerceAnalyzerApplication {
         @Bean
         public org.apache.hadoop.conf.Configuration hadoopConfig() throws URISyntaxException, IOException {
             org.apache.hadoop.conf.Configuration hadoopConf = new org.apache.hadoop.conf.Configuration();
-            FileSystem fs = FileSystem.get(URI.create(hadoopURI), hadoopConf);
-            FileStatus[] fileStatus = fs.listStatus(new Path("/user/hadoop/"));
-            for(FileStatus status : fileStatus){
-                System.out.println(status.getPath().toString());
-            }
             return hadoopConf;
         }
 
