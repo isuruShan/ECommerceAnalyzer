@@ -48,6 +48,13 @@ under the License.
             <url>https://repo.spring.io/plugins-release/</url>
             <mirrorOf>central</mirrorOf>
         </mirror>
+        
+        <mirror>
+            <id>pentaho-public</id>
+            <name>Pentaho Public</name>
+            <url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
     </mirrors>
 
 </settings>
