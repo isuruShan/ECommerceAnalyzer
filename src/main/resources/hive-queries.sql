@@ -63,7 +63,25 @@ CREATE TABLE IF NOT EXISTS products( id String, category_name String, name_lengh
 --------------------- Start analyzer queries --------------------
 SELECT count(*) from orders;
 ---- most sold products in least revenue generating states for a span of time ------
-SELECT * FROM (SELECT rank_phase.sales_per_product, rank_phase.product_id, rank_phase.state, rank() over ( PARTITION by rank_phase.state ORDER BY rank_phase.sales_per_product DESC ) as rank FROM (SELECT sum(oi.price) as sales_per_product, oi.product_id as product_id, c.state as state FROM order_items oi INNER JOIN orders o on (oi.order_id = o.id) INNER JOIN customers c on (c.id = o.customer_id) where c.state in (SELECT sps.state FROM (SELECT sum(oi.price) as sales, c.state as state FROM order_items oi INNER JOIN orders o on (oi.order_id = o.id) INNER JOIN customers c on (o.customer_id = c.id) where purchase_timestamp BETWEEN unix_timestamp('2018-01-01 00:00:00.000', 'yyyy-MM-dd HH:mm:ss.SSS') AND unix_timestamp('2018-07-01 00:00:00.000', 'yyyy-MM-dd HH:mm:ss.SSS') GROUP BY c.state ORDER BY sales limit 5) sps) GROUP BY oi.product_id, c.state) rank_phase) final WHERE final.rank <= 5
+SELECT *
+FROM (SELECT rank_phase.sales_per_product,
+             rank_phase.product_id,
+             rank_phase.state,
+             rank() over ( PARTITION by rank_phase.state ORDER BY rank_phase.sales_per_product DESC ) as rank
+      FROM (SELECT sum(oi.price) as sales_per_product, oi.product_id as product_id, c.state as state
+            FROM order_items oi
+                     INNER JOIN orders o on (oi.order_id = o.id)
+                     INNER JOIN customers c on (c.id = o.customer_id)
+            where c.state in (SELECT sps.state
+                              FROM (SELECT sum(oi.price) as sales, c.state as state
+                                    FROM order_items oi
+                                             INNER JOIN orders o on (oi.order_id = o.id)
+                                             INNER JOIN customers c on (o.customer_id = c.id)
+                                    where purchase_timestamp BETWEEN unix_timestamp('2018-01-01 00:00:00.000', 'yyyy-MM-dd HH:mm:ss.SSS') AND unix_timestamp('2018-07-01 00:00:00.000', 'yyyy-MM-dd HH:mm:ss.SSS')
+                                    GROUP BY c.state
+                                    ORDER BY sales limit 5) sps)
+            GROUP BY oi.product_id, c.state) rank_phase) final
+WHERE final.rank <= 5
 ---- most sold products in least revenue generating states ------
 
 ---- daily sales analyzer ----
