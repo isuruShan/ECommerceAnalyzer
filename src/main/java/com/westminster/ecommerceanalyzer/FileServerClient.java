@@ -2,6 +2,7 @@ package com.westminster.ecommerceanalyzer;
 
 import com.westminster.ecommerceanalyzer.models.DataFileNames;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,9 @@ public class FileServerClient {
     @Value("${file-server-api.url}")
     private String fileServerApiUrl;
 
-    public List<String> getAllDirectories() {
+
+
+    public List<String> getAllDirectories() throws JSONException {
         String result = restTemplate.getForObject(fileServerApiUrl + "get-all-files", String.class);
         JSONArray jsonArray = new JSONArray(result);
         List<String> listdata = new ArrayList<String>();
@@ -32,7 +35,7 @@ public class FileServerClient {
         }
         return listdata;
     }
-    public List<String> getAllDirectoriesFromDate(Date fromDate) {
+    public List<String> getAllDirectoriesFromDate(Date fromDate) throws JSONException {
         String result = restTemplate.getForObject(fileServerApiUrl + "get-all-files-after?date=" + fromDate.toString() , String.class);
         JSONArray jsonArray = new JSONArray(result);
         List<String> listdata = new ArrayList<String>();

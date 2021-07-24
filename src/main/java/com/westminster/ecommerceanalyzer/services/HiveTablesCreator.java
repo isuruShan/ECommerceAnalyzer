@@ -4,6 +4,7 @@ import com.westminster.ecommerceanalyzer.HiveConnector;
 import com.westminster.ecommerceanalyzer.entities.HiveQueryEntity;
 import com.westminster.ecommerceanalyzer.entities.HiveQueryRepo;
 import com.westminster.ecommerceanalyzer.models.DataFileNames;
+import com.westminster.ecommerceanalyzer.models.HiveQueryNames;
 import com.westminster.ecommerceanalyzer.models.QueryParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +38,20 @@ public class HiveTablesCreator {
     public void loadDataToTable(DataFileNames fileName, String directory) throws SQLException, ClassNotFoundException {
         logger.info("starting loading data to " + fileName + " table");
         createTable(fileName.getTableName());
-        HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(fileName.getTableName(), true);
+        HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(HiveQueryNames.LOAD_DATA_TO_TABLE.getName(), true);
         QueryParameters params = new QueryParameters();
-        params.setParam("directory", "/data/" + directory);
+        params.setParam("directory", DataCollectorService.BASE_INPUT_FILE_PATH + directory);
         params.setParam("filename", fileName.getFileName());
         params.setParam("table", fileName.getTableName());
-        String queryWithParams = createQueryWithParams(params, query.getQuery());
-        Connection con = hiveConnector.getConnection();
-        Statement statement = con.createStatement();
-        statement.execute(queryWithParams);
-        hiveConnector.closeConnection(con);
+        try {
+            String queryWithParams = createQueryWithParams(params, query.getQuery());
+            Connection con = hiveConnector.getConnection();
+            Statement statement = con.createStatement();
+            statement.execute(queryWithParams);
+            hiveConnector.closeConnection(con);
+        } catch(NullPointerException npe) {
+            logger.error("database does not have a create query for table " + fileName.getTableName() + ".", npe );
+        }
     }
 
     private String createQueryWithParams(QueryParameters params, String query) {

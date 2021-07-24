@@ -21,7 +21,7 @@ public class AnalyzeJobEntity {
     @Column(name = "date_triggered")
     private Date dateTriggered;
     @Column(name = "is_latest")
-    private boolean isLatest;
+    private boolean latest;
     private int status;
     private String result;
 
@@ -48,18 +48,15 @@ public class AnalyzeJobEntity {
     }
 
     public void setDateTriggered(java.util.Date date) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = format.format(date);
-        java.sql.Date date1 = (java.sql.Date) format.parse (dateString);
-        this.dateTriggered = date1;
+        this.dateTriggered = date;
     }
 
     public boolean isLatest() {
-        return isLatest;
+        return latest;
     }
 
     public void setLatest(boolean latest) {
-        isLatest = latest;
+        this.latest = latest;
     }
 
     public AnalyzerStatus getStatus() {
