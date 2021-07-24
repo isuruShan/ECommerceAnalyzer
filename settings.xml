@@ -22,27 +22,33 @@ under the License.
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-          <mirrors>
-		  <mirror>
-			<id>nexus-aliyun</id>
-			<mirrorOf>*</mirrorOf>
-			<name>Nexus aliyun</name>
-			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
-		  </mirror>
-		
-		  <mirror>
-			<id>aliyunmaven</id>
-			<mirrorOf>*</mirrorOf>
-			<name>Aliyun spring plugin warehouse</name>
-			<url>https://maven.aliyun.com/repository/spring-plugin</url>
-		  </mirror>
+    <mirrors>
+        <mirror>
+            <id>google-maven-central</id>
+            <name>Google Maven Central</name>
+            <url>https://maven-central.storage.googleapis.com/maven2/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+        <mirror>
+            <id>nexus-aliyun</id>
+            <mirrorOf>*</mirrorOf>
+            <name>Nexus aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+        </mirror>
 
-		  <mirror> 
-			<id>repo2</id> 
-			<name>Mirror from Maven Repo2</name> 
-			<url>https://repo.spring.io/plugins-release/</url> 
-			<mirrorOf>central</mirrorOf> 
-		  </mirror>
-          </mirrors>
+        <mirror>
+            <id>aliyunmaven</id>
+            <mirrorOf>*</mirrorOf>
+            <name>Aliyun spring plugin warehouse</name>
+            <url>https://maven.aliyun.com/repository/spring-plugin</url>
+        </mirror>
+
+        <mirror>
+            <id>repo2</id>
+            <name>Mirror from Maven Repo2</name>
+            <url>https://repo.spring.io/plugins-release/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+    </mirrors>
 
 </settings>
