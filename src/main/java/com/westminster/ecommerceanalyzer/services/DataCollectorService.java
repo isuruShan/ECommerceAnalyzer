@@ -1,20 +1,22 @@
 package com.westminster.ecommerceanalyzer.services;
 
 import com.westminster.ecommerceanalyzer.FileServerClient;
-import com.westminster.ecommerceanalyzer.HdfsClient;
 import com.westminster.ecommerceanalyzer.entities.DataRetrievalEntity;
 import com.westminster.ecommerceanalyzer.entities.DataRetrievalRepo;
 import com.westminster.ecommerceanalyzer.models.CollectionStatus;
 import com.westminster.ecommerceanalyzer.models.DataFileNames;
+import com.westminster.ecommerceanalyzer.models.FileTransferDocuement;
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,9 +34,12 @@ public class DataCollectorService {
     @Autowired
     private HiveTablesCreator hiveTablesCreator;
     @Autowired
-    HdfsClient hdfsClient;
+    RestTemplate restTemplate;
 
-    public static final String BASE_INPUT_FILE_PATH = "/data/input/";
+    @Value("${file-retriever-server-api.url}")
+    private String fileServerApiUrl;
+
+    public static final String BASE_INPUT_FILE_PATH = "/usr/local/data/";
 
     Logger logger = LoggerFactory.getLogger(DataCollectorService.class);
 
@@ -61,10 +66,9 @@ public class DataCollectorService {
                     dataRetrievalRepo.insert(dataRetrievalEntity);
                     Arrays.stream(DataFileNames.values()).forEach(file -> {
                         try {
-                            String filePath = BASE_INPUT_FILE_PATH + directory + "/" + file.getFileName();
-                            hdfsClient.writeToDFS(filePath, fileServerClient.downloadFile(file, directory));
+                            writeToRemoteServer(file.getFileName(), fileServerClient.downloadFile(file, directory));
                             updateTable(file, directory);
-                        } catch (SQLException | ClassNotFoundException | IOException e) {
+                        } catch (SQLException | ClassNotFoundException e) {
                             dataRetrievalEntity.setStatus(CollectionStatus.FAILED.getValue());
                             dataRetrievalRepo.update(dataRetrievalEntity);
                             logger.info("Data retrieval process interrupted.");
@@ -84,5 +88,12 @@ public class DataCollectorService {
 
     private void updateTable(DataFileNames fileName, String directory) throws SQLException, ClassNotFoundException {
         hiveTablesCreator.loadDataToTable(fileName, directory);
+    }
+
+    private void writeToRemoteServer(String fileName, String data) {
+        FileTransferDocuement fileTransferDocuement = new FileTransferDocuement();
+        fileTransferDocuement.setData(data);
+        fileTransferDocuement.setFileName(fileName);
+        restTemplate.postForObject(URI.create(fileServerApiUrl + "store-file"), fileTransferDocuement, String.class);
     }
 }

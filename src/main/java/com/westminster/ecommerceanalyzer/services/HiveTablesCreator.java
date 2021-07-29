@@ -40,7 +40,7 @@ public class HiveTablesCreator {
         createTable(fileName.getTableName());
         HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(HiveQueryNames.LOAD_DATA_TO_TABLE.getName(), true);
         QueryParameters params = new QueryParameters();
-        params.setParam("directory", DataCollectorService.BASE_INPUT_FILE_PATH + directory);
+        params.setParam("directory", DataCollectorService.BASE_INPUT_FILE_PATH );
         params.setParam("filename", fileName.getFileName());
         params.setParam("table", fileName.getTableName());
         try {

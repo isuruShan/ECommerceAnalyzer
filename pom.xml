@@ -182,6 +182,11 @@
             <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-storage</artifactId>
+            <version>8.4.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
