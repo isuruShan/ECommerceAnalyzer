@@ -43,8 +43,8 @@ public class DataCollectorService {
 
     Logger logger = LoggerFactory.getLogger(DataCollectorService.class);
 
-    @Scheduled(fixedDelay = 10000000)
-//    @Scheduled(cron="0 0 * * * SUN")
+//    @Scheduled(fixedDelay = 10000000)
+    @Scheduled(cron="0 0 * * * SUN")
     @Async("taskExecutor")
     public void collect() throws JSONException {
         logger.info("starting the daily data collector.");

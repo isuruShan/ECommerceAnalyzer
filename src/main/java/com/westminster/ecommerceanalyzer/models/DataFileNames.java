@@ -7,7 +7,7 @@ public enum DataFileNames {
     ORDER_ITEMS_FILE("order_items.csv", "order_items"),
     ORDERS_FILE("orders.csv", "orders"),
     SELLER_FILE("sellers.csv", "sellers"),
-    PAYMENTS_FILE("payments.csv", "payments");
+    PAYMENTS_FILE("order_payments.csv", "payments");
     private final String fileName;
     private final String tableName;
 

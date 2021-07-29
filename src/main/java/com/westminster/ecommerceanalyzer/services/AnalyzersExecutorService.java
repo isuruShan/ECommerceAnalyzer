@@ -74,10 +74,9 @@ public class AnalyzersExecutorService {
             logger.info("starting weekly income analyzer ");
             Connection con = hiveConnector.getConnection();
             Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery(query.getQuery());
-            statement.execute("INSERT OVERWRITE DIRECTORY '/data/output/" + HiveQueryNames.MOST_REVENUE_LOCATIONS.getOutputFile() + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' " + query.getQuery());
-            String fileServerFilePath = putFilesFromTheHDFSToLocal(HiveQueryNames.MOST_REVENUE_LOCATIONS.getOutputFile());
-            putFilesToBlobStore(fileServerFilePath, HiveQueryNames.MOST_REVENUE_LOCATIONS.getOutputFile());
+            statement.execute("INSERT OVERWRITE DIRECTORY '/data/output/" + HiveQueryNames.DAILY_INCOME_ANALYZER.getOutputFile() + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' " + query.getQuery());
+            String fileServerFilePath = putFilesFromTheHDFSToLocal(HiveQueryNames.DAILY_INCOME_ANALYZER.getOutputFile());
+            putFilesToBlobStore("sales-percentages.csv/000000_0", HiveQueryNames.DAILY_INCOME_ANALYZER.getOutputFile());
             hiveConnector.closeConnection(con);
             analyzeJobEntity.setStatus(AnalyzerStatus.SUCCESSFUL);
             analyzerJobRepo.save(analyzeJobEntity);
@@ -88,6 +87,7 @@ public class AnalyzersExecutorService {
         }
 
     }
+
 
     @Scheduled(cron = "30 0 * * * SUN")
     @Async("taskExecutor")
@@ -98,7 +98,6 @@ public class AnalyzersExecutorService {
             logger.info("starting most revenue location analyzer ");
             Connection con = hiveConnector.getConnection();
             Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery(query.getQuery());
             statement.execute("INSERT OVERWRITE DIRECTORY '/data/output/" + HiveQueryNames.MOST_REVENUE_LOCATIONS.getOutputFile() + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' " + query.getQuery());
             String fileServerFilePath = putFilesFromTheHDFSToLocal(HiveQueryNames.MOST_REVENUE_LOCATIONS.getOutputFile());
             putFilesToBlobStore(fileServerFilePath, HiveQueryNames.MOST_REVENUE_LOCATIONS.getOutputFile());
@@ -113,7 +112,8 @@ public class AnalyzersExecutorService {
 
     }
 
-    @Scheduled(cron = "30 0 * * * SUN")
+
+//    @Scheduled(cron = "0 1 * * * SUN")
 //    @Scheduled(fixedDelay = 600000, initialDelay = 5000)
     @Async("taskExecutor")
     public void executeLeastRevenueLocationsMostSellingProductsAnalyzer() throws ParseException, AnalyzerException {
@@ -123,7 +123,6 @@ public class AnalyzersExecutorService {
             logger.info("starting most revenue location analyzer ");
             Connection con = hiveConnector.getConnection();
             Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery(query.getQuery());
             statement.execute("INSERT OVERWRITE DIRECTORY '/data/output/" + HiveQueryNames.LEAST_REVENUE_LOCATIONS_MOST_SELLING_PRODUCTS.getOutputFile() + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' " + query.getQuery());
             String fileServerFilePath = putFilesFromTheHDFSToLocal(HiveQueryNames.LEAST_REVENUE_LOCATIONS_MOST_SELLING_PRODUCTS.getOutputFile());
             putFilesToBlobStore(fileServerFilePath, HiveQueryNames.LEAST_REVENUE_LOCATIONS_MOST_SELLING_PRODUCTS.getOutputFile());
@@ -137,8 +136,8 @@ public class AnalyzersExecutorService {
         }
     }
 
-    //    @Scheduled(fixedDelay = 600000, initialDelay = 5000)
-    @Scheduled(cron = "30 1 * * * SUN")
+    @Scheduled(fixedDelay = 600000, initialDelay = 5000)
+//    @Scheduled(cron = "30 1 * * * SUN")
     @Async("taskExecutor")
     public void executeMostPopularSellersAnalyzer() throws ParseException, AnalyzerException {
         AnalyzeJobEntity analyzeJobEntity = createRecordsForAnalyzer(HiveQueryNames.MOST_POPULAR_SELLERS.getName());
@@ -160,7 +159,7 @@ public class AnalyzersExecutorService {
         }
     }
 
-    //    @Scheduled(fixedDelay=60000)
+
     @Scheduled(cron = "0 2 * * * SUN")
     @Async("taskExecutor")
     public void executeMostSoldCreditCardProductsAnalyzer() throws ParseException, AnalyzerException {
@@ -170,7 +169,6 @@ public class AnalyzersExecutorService {
             logger.info("starting most revenue location analyzer ");
             Connection con = hiveConnector.getConnection();
             Statement statement = con.createStatement();
-            ResultSet resultSet = statement.executeQuery(query.getQuery());
             statement.execute("INSERT OVERWRITE DIRECTORY '/data/output/" + HiveQueryNames.MOST_SOLD_CREDIT_CARD_PRODUCTS.getOutputFile() + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' " + query.getQuery());
             String fileServerFilePath = putFilesFromTheHDFSToLocal(HiveQueryNames.MOST_SOLD_CREDIT_CARD_PRODUCTS.getOutputFile());
             putFilesToBlobStore(fileServerFilePath, HiveQueryNames.MOST_SOLD_CREDIT_CARD_PRODUCTS.getOutputFile());
