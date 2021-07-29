@@ -2,16 +2,16 @@ package com.westminster.ecommerceanalyzer.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 @Table(name = "data_retrieval")
 public class DataRetrievalEntity implements Serializable {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private int status;
@@ -45,7 +45,7 @@ public class DataRetrievalEntity implements Serializable {
     public java.util.Date getDate() throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = format.format(date);
-        java.util.Date date1 = format.parse (dateString);
+        java.util.Date date1 = format.parse(dateString);
         return date1;
     }
 

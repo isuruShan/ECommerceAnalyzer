@@ -7,11 +7,11 @@ import java.io.Serializable;
 @Table(name = "hive_query")
 public class HiveQueryEntity implements Serializable {
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private String query;
-    @Column(name="is_dml")
+    @Column(name = "is_dml")
     private boolean isDML;
 
     public HiveQueryEntity(int id, String name, String query, boolean isDML) {
@@ -27,6 +27,7 @@ public class HiveQueryEntity implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+
     public int getId() {
         return id;
     }

@@ -6,7 +6,6 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +33,7 @@ public class HdfsClient {
         IOUtils.copyBytes(dataStream, out, 4096, true);
     }
 
-    public List<String> listDirectory(String directoryPath) throws IOException  {
+    public List<String> listDirectory(String directoryPath) throws IOException {
         FileSystem fs = FileSystem.get(URI.create(hdfsBasePath), hadoopConf);
         FileStatus[] fileStatus = fs.listStatus(new Path(directoryPath));
         List<String> fileList = new ArrayList<>();
@@ -54,7 +53,7 @@ public class HdfsClient {
         boolean out = fs.delete(new Path(filePath), true);
     }
 
-    public void getFile(String filePath) throws  IOException {
+    public void getFile(String filePath) throws IOException {
         FileSystem fs = FileSystem.get(URI.create(hdfsBasePath), hadoopConf);
         InputStream in = null;
         try {

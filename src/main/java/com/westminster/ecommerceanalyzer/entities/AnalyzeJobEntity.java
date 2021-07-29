@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name="analyze_job")
+@Table(name = "analyze_job")
 public class AnalyzeJobEntity {
 
     @Id
@@ -28,6 +28,7 @@ public class AnalyzeJobEntity {
     public void setId(Long id) {
         this.id = id;
     }
+
     public Long getId() {
         return id;
     }
@@ -43,7 +44,7 @@ public class AnalyzeJobEntity {
     public java.util.Date getDateTriggered() throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = format.format(dateTriggered);
-        java.util.Date date1 = format.parse (dateString);
+        java.util.Date date1 = format.parse(dateString);
         return date1;
     }
 

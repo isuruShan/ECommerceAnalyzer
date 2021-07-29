@@ -40,7 +40,7 @@ public class HiveTablesCreator {
         createTable(fileName.getTableName());
         HiveQueryEntity query = hiveQueryRepo.findByNameAndAndDML(HiveQueryNames.LOAD_DATA_TO_TABLE.getName(), true);
         QueryParameters params = new QueryParameters();
-        params.setParam("directory", DataCollectorService.BASE_INPUT_FILE_PATH );
+        params.setParam("directory", DataCollectorService.BASE_INPUT_FILE_PATH);
         params.setParam("filename", fileName.getFileName());
         params.setParam("table", fileName.getTableName());
         try {
@@ -49,14 +49,14 @@ public class HiveTablesCreator {
             Statement statement = con.createStatement();
             statement.execute(queryWithParams);
             hiveConnector.closeConnection(con);
-        } catch(NullPointerException npe) {
-            logger.error("database does not have a create query for table " + fileName.getTableName() + ".", npe );
+        } catch (NullPointerException npe) {
+            logger.error("database does not have a create query for table " + fileName.getTableName() + ".", npe);
         }
     }
 
     private String createQueryWithParams(QueryParameters params, String query) {
-        for(Map.Entry<String, String> param: params.getParameterMap().entrySet()) {
-            query = query.replaceAll("\\$"+param.getKey(), param.getValue());
+        for (Map.Entry<String, String> param : params.getParameterMap().entrySet()) {
+            query = query.replaceAll("\\$" + param.getKey(), param.getValue());
         }
         return query;
     }

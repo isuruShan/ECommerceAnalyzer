@@ -27,8 +27,9 @@ public class HiveConnector {
     public Connection getConnection() throws SQLException, ClassNotFoundException {
         logger.info("starting new hive connection");
         Class.forName(DRIVER_NAME);
-        return DriverManager.getConnection(hiveDbUri, hiveDbUserName, hiveDbPassword );
+        return DriverManager.getConnection(hiveDbUri, hiveDbUserName, hiveDbPassword);
     }
+
     public void closeConnection(Connection con) throws SQLException {
         con.close();
         logger.info("closed the hive connection");

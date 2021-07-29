@@ -26,9 +26,11 @@ public enum HiveQueryNames {
     public String getName() {
         return name;
     }
+
     public String getOutputFile() {
         return outputFile;
     }
+
     public int getValue() {
         return value;
     }

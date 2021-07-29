@@ -160,40 +160,43 @@ WHERE final.rank <= 5;
 ---- most sold products in least revenue generating states ------
 
 ---- daily sales analyzer ----
-SELECT * from (
-select qlf.product,
-       qlf.category,
-       qlf.sales_percentage,
-       qlf.sales_amout,
-       rank() over ( PARTITION by qlf.category ORDER BY qlf.sales_percentage DESC ) as rank
+SELECT *
 from (
-         select p.id                                     as product,
-                ql.category                              as category,
-                (sum(oi.price) * 100 / ql.category_sale) as sales_percentage,
-                sum(oi.price)                            as sales_amout
+         select qlf.product,
+                qlf.category,
+                qlf.sales_percentage,
+                qlf.sales_amout,
+                rank() over ( PARTITION by qlf.category ORDER BY qlf.sales_percentage DESC ) as rank
+         from (
+                  select p.id                                     as product,
+                         ql.category                              as category,
+                         (sum(oi.price) * 100 / ql.category_sale) as sales_percentage,
+                         sum(oi.price)                            as sales_amout
 
-         from order_items oi
-                  inner join products p on (p.id = oi.product_id)
-                  inner join (select sum(oi1.price) as category_sale, p1.category_name as category
-                              from order_items oi1
-                                       inner join products p1 on (p1.id = oi1.product_id)
-                              group by p1.category_name) ql on (ql.category = p.category_name)
-         group by p.id, ql.category_sale, ql.category) qlf) final
+                  from order_items oi
+                           inner join products p on (p.id = oi.product_id)
+                           inner join (select sum(oi1.price) as category_sale, p1.category_name as category
+                                       from order_items oi1
+                                                inner join products p1 on (p1.id = oi1.product_id)
+                                       group by p1.category_name) ql on (ql.category = p.category_name)
+                  group by p.id, ql.category_sale, ql.category) qlf) final
 where final.rank < 10;
 --------------------- End analyzer queries --------------------
 
 --- most revenue generation geo location ---
-select c.city, sum(py.payment_value) as salesfrom orders o
-         inner join payments py
-                    on (o.id = py.order_id)
-         inner join customers c on (o.customer_id = c.id)
+select c.city,
+       sum(py.payment_value) as salesfrom orders o inner join payments py
+on (o.id = py.order_id)
+    inner join customers c on (o.customer_id = c.id)
 group by c.city
 order by sales desc limit 10;
 
 --- most revenue generating sellers ----
 select sales_per_seller, seller_id, product
 from (
-         select ql.sales_per_seller, ql.seller_id, ql.product,
+         select ql.sales_per_seller,
+                ql.seller_id,
+                ql.product,
                 rank() over ( PARTITION by ql.product ORDER BY ql.sales_per_seller DESC ) as rank
          from (
                   select sum(oi.price) as sales_per_seller, s.id as seller_id, oi.product_id as product
